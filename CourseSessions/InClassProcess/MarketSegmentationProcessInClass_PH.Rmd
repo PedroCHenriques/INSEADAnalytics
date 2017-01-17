@@ -1,6 +1,6 @@
 ---
 title: "A Market Segmentation and Purchase Drivers Process"
-author: "T. Evgeniou"
+author: "P. Henriques"
 output:
   html_document:
     css: ../../AnalyticsStyles/default.css
