@@ -319,19 +319,16 @@ iprint.df(Rotated_Factors_thres, scale=TRUE)
 
 **Answers**
 
-1. Component 1: reputation / status  
-2. Component 2: hobby / socialization  
-3. Component 3: brand sensitivity  
-4. Component 4: 
-*
-*
-*
-*
-*
-*
-*
-*
-*
+1. The following componentes were taken:  
+Component 1: reputation / status  
+Component 2: hobby / socialization  
+Component 3: brand sensitivity  
+Component 4: knowledgeability  
+Component 5: price sensitivity  
+
+2. Coice of components:  
+i) Statsitical: eigenvalue larger than 1  
+ii) Interpretation: 
 
 ## Step 6:  Save factor scores 
 
