@@ -155,10 +155,10 @@ This is an important step and will get you to think about the overall process on
 
 ###  Part IV: Read/Write .CSV files
 
-Finally, one can read and write data in .CSV files. For example, we can save the first 20 days of data for S&P and Apple in a file using the command:
+Finally, one can read and write data in .CSV files. For example, we can save the first 20 days of data for S&P, Apple and Yahoo in a file using the command:
 
 ```{r eval = TRUE, echo=TRUE, comment=NA, warning=FALSE, message=FALSE,results='asis'}
-write.csv(StockReturns[1:20,c("SPY","AAPL")], file = "twentydays.csv", row.names = TRUE, col.names = TRUE) 
+write.csv(StockReturns[1:20,c("SPY","AAPL","YHOO")], file = "twentydays.csv", row.names = TRUE, col.names = TRUE) 
 ```
 
 Do not get surpsised if you see the csv file in your directories suddenly! You can then read the data from the csv file using the read.csv command. For example, this will load the data from the csv file and save it in a new variable that now is called "myData": 
@@ -179,10 +179,7 @@ myData + StockReturns[1:40,]
 ```
 
 **Your Answers here:**
-1. <br>
-<br>
-<br>
-<br>
+1. This fuction retrieves the sum of logical tests that are either 1 for "True" or 0 for "False". Since "mydata" is reading the twentydays file and this file is constructed with data from StockReturns it is only natural that the logical test gives us a series of 1 which add up to 20 observations.
 
 <hr>
 <hr>
