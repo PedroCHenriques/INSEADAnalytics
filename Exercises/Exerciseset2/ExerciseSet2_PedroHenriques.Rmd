@@ -1,18 +1,6 @@
 ---
 title: 'Exercise Set 2: A $300 Billion Strategy'
 author: "Pedro Henriques"
-output:
-  html_document:
-    css: ../../AnalyticsStyles/default.css
-    theme: paper
-    toc: yes
-    toc_float:
-      collapsed: no
-      smooth_scroll: yes
-  pdf_document:
-    includes:
-      in_header: ../../AnalyticsStyles/default.sty
-always_allow_html: yes
 ---
 
 > **IMPORTANT**: Please make sure you create a copy of this file with a customized name, so that your work (e.g. answers to the questions) is not over-written when you pull the latest content from the course github. 
@@ -167,16 +155,58 @@ iprint.df(show_data, scale=TRUE)
     - 2 yr T-Notes  
     - Canadian Bond  
     - Eurodollar  
-    
-*
-*
-*
-*
-*
-*
-*
-*
-*
+3. The following interpretations apply:  
+    - Component 1: risk free bonds  
+    - Component 2: currencies  
+    - Component 3: European stock market indexes  
+    - Component 4: North-American stock market indexes  
+    - Component 5: European sort term reference rates  
+    - Component 6: oil and refined oil assets  
+    - Component 7: metals  
+    - Component 8: agricultural commodities  
+    - Component 9: precious metals  
+    - Component 10: Asian stock market indexes  
+4. a) Pre-crisis bull market years  
+```{r echo=TRUE, tidy=TRUE}
+#define data sets
+precrisis_data = futures_data[as.Date(rownames(futures_data))>"2002-11-01"&as.Date(rownames(futures_data))<"2007-10-01",]
+crisis_data = futures_data[as.Date(rownames(futures_data))>"2007-10-02"&as.Date(rownames(futures_data))<"2009-03-01",]
+
+#create tables for pre crisis
+Variance_Explained_Table_results_precrisis<-PCA(precrisis_data, graph=FALSE)
+Variance_Explained_Table_precrisis<-Variance_Explained_Table_results_precrisis$eig
+Variance_Explained_Table_copy_precrisis<-Variance_Explained_Table_precrisis
+
+rownames(Variance_Explained_Table_precrisis) <- paste("Component", 1:nrow(Variance_Explained_Table_precrisis), sep=" ")
+colnames(Variance_Explained_Table_precrisis) <- c("Eigenvalue", "Pct of explained variance", "Cumulative pct of explained variance")
+
+#create chart for pre crisis
+iprint.df(round(Variance_Explained_Table_precrisis, 2))
+eigenvalues_precrisis <- Variance_Explained_Table_precrisis[, "Eigenvalue"]
+df <- cbind(as.data.frame(eigenvalues_precrisis), c(1:length(eigenvalues_precrisis)), rep(1, length(eigenvalues_precrisis)))
+colnames(df) <- c("eigenvalues", "components", "abline")
+iplot.df(melt(df, id="components"))
+```
+  
+  b) Crisis bear market years  
+```{r echo=TRUE, tidy=TRUE}
+#create tables for crisis
+Variance_Explained_Table_results_crisis<-PCA(crisis_data, graph=FALSE)
+Variance_Explained_Table_crisis<-Variance_Explained_Table_results_crisis$eig
+Variance_Explained_Table_copy_crisis<-Variance_Explained_Table_crisis
+
+rownames(Variance_Explained_Table_crisis) <- paste("Component", 1:nrow(Variance_Explained_Table_crisis), sep=" ")
+colnames(Variance_Explained_Table_crisis) <- c("Eigenvalue", "Pct of explained variance", "Cumulative pct of explained variance")
+
+#create chart for crisis
+iprint.df(round(Variance_Explained_Table_crisis, 2))
+eigenvalues_crisis <- Variance_Explained_Table_crisis[, "Eigenvalue"]
+df <- cbind(as.data.frame(eigenvalues_crisis), c(1:length(eigenvalues_crisis)), rep(1, length(eigenvalues_crisis)))
+colnames(df) <- c("eigenvalues", "components", "abline")
+iplot.df(melt(df, id="components"))
+```
+  
+5. During the pre-crisis years the returns on the futures are less correlated than in crisis years. This is an example of the well-kown fact that diversification effects across asset classes tend to be business cycle dependent, i.e. the diversification effect of different asset classes tends to disappear during periods of financial meltdown.    
 
 # A Simple Futures Trend Following Strategy
 
@@ -194,7 +224,7 @@ Here is the code:
 ```{r echo=TRUE, tidy=TRUE}
 signal_used = 0*futures_data # just initialize the trading signal to be 0
 # Take many moving Average (MA) Signals and let them "vote" with their sign (+-1, e.g. long or short vote, for each signal)
-MAfreq<-seq(10,250,by=20)
+MAfreq <- seq(10,250,by=20)
 for (iter in 1:length(MAfreq))
   signal_used = signal_used + sign(apply(futures_data,2, function(r) ma(r,MAfreq[iter])))
 # Now make sure we invest $1 every day (so the sum of the absolute values of the weights is 1 every day)
@@ -206,7 +236,7 @@ signal_used = t(apply(signal_used,1,function(r) {
 }))
 colnames(signal_used) <- colnames(futures_data)
 # Now create the returns of the strategy for each futures time series
-strategy_by_future <- scrub(shift(signal_used,2)*futures_data) # signal 2 days ago
+strategy_by_future <- scrub(shift(signal_used,2)*futures_data) # use the signal from 2 days ago
 # finally, this is our futures trend following strategy
 trading_strategy = apply(strategy_by_future,1,sum)
 names(trading_strategy) <- rownames(futures_data)
