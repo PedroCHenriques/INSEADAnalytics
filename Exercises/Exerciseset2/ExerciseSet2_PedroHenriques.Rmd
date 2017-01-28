@@ -268,16 +268,35 @@ How does this compare with **existing CTA products** such as [this one from Soci
 
 **Answers**
 
-*
-*
-*
-*
-*
-*
-*
-*
-*
-*
+1. The strategy above allocates according to moving averages. If a given futures has been providing higher returns for the past few days (based on its moving average), the strategy will increase its allocation to these futures, and vice versa. It is, in this sense, a purely technical strategy.  
+2. We can change the strategy to use a 10 day lag as follows:  
+```{r echo=TRUE, tidy=TRUE}
+signal_used = 0*futures_data # just initialize the trading signal to be 0
+# Take many moving Average (MA) Signals and let them "vote" with their sign (+-1, e.g. long or short vote, for each signal)
+MAfreq <- seq(10,250,by=20)
+for (iter in 1:length(MAfreq))
+  signal_used = signal_used + sign(apply(futures_data,2, function(r) ma(r,MAfreq[iter])))
+# Now make sure we invest $1 every day (so the sum of the absolute values of the weights is 1 every day)
+signal_used = t(apply(signal_used,1,function(r) {
+  res = r  
+  if ( sum(abs(r)) !=0 )
+    res = r/sum(abs(r))
+  res
+}))
+colnames(signal_used) <- colnames(futures_data)
+# Now create the returns of the strategy for each futures time series
+strategy_by_future_2 <- scrub(shift(signal_used,10)*futures_data) # use the signal from 2 days ago
+# finally, this is our futures trend following strategy
+trading_strategy_2 = apply(strategy_by_future_2,1,sum)
+names(trading_strategy_2) <- rownames(futures_data)
+```
+
+We can see that the results are significantly worse in terms of cumulative returns with a 10 day lag:  
+
+```{r}
+iplot.pnl(trading_strategy_2)
+```
+
 
 # A class competition
 
